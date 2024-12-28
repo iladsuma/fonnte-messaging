@@ -17,10 +17,11 @@ class FonnteService
     }
     public function sendMessage()
     {
-     
+        $filePath = storage_path('app/public/' . $product->image);
         $postData = [
-            'target' => '62895801205393', // Pastikan nomor di format internasional
-            'message' => 'testing pesan 1',
+            'target' => $phoneNumber, // Use the selected phone number
+            'message' => $template->template_content,
+            'file' => new \CURLFile($filePath),
             'schedule' => 0,
             'typing' => false,
             'delay' => '2',
@@ -31,6 +32,9 @@ class FonnteService
             'Authorization' => 'WLYy94BAnsLrgb15zLsx' // Token Fonnte Anda
         ])->post('https://api.fonnte.com/send', $postData);
     
+    // Debug: Display the response to check the result
+    dd($response->json(), $response->status());
+
         // Debug: Lihat respons dari API
     
 }    

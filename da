@@ -1,0 +1,238 @@
+[33mcommit b507f084974cd524e7043f3caf3e7502f115c27b[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Merge: 529b98e6 290c3b43
+Author: iladsuma <67311820+iladsuma@users.noreply.github.com>
+Date:   Wed Dec 25 12:01:43 2024 +0700
+
+    Initial commit of Laravel project
+
+[33mcommit 290c3b43b1cb04a11f1de6cd21b692f8f7ee17f7[m
+Author: iladsuma <67311820+iladsuma@users.noreply.github.com>
+Date:   Wed Dec 25 11:36:05 2024 +0700
+
+    Initial commit
+
+[33mcommit 529b98e6863dc3827e03e8ebac04bf702cc9212e[m
+Author: iladsuma <67311820+iladsuma@users.noreply.github.com>
+Date:   Wed Dec 25 11:32:21 2024 +0700
+
+    Delete fonnte-messaging
+
+[33mcommit 7da74cc35b1c002f7378f1f9a333d2b6820f8c09[m
+Author: iladsuma <67311820+iladsuma@users.noreply.github.com>
+Date:   Wed Dec 25 11:27:21 2024 +0700
+
+    Resolve merge conflicts
+
+[33mcommit 444bb9525868c62c2968eeaa95ed30d6960ded97[m
+Author: iladsuma <67311820+iladsuma@users.noreply.github.com>
+Date:   Wed Dec 25 11:24:35 2024 +0700
+
+    Initial commit
+
+[33mcommit eb8085cf77bc5165d1af0b90bd9cdfb406d65299[m[33m ([m[1;33mtag: v11.5.0[m[33m)[m
+Author: Mior Muhammad Zaki <crynobone@gmail.com>
+Date:   Fri Dec 13 21:57:40 2024 +0800
+
+    [11.x] Update `config/mail.php` with supported configuration (#6506)
+    
+    Signed-off-by: Mior Muhammad Zaki <crynobone@gmail.com>
+
+[33mcommit a39cb7cf585798485e3876acf3c6e84ab3f64f1e[m
+Author: taylorotwell <taylorotwell@users.noreply.github.com>
+Date:   Tue Dec 10 16:20:39 2024 +0000
+
+    Update CHANGELOG
+
+[33mcommit 0993d09dc8206d0933628074036427344be16fc5[m[33m ([m[1;33mtag: v11.4.0[m[33m)[m
+Author: Tim MacDonald <hello@timacdonald.me>
+Date:   Tue Dec 3 09:11:41 2024 +1100
+
+    Upgrade to Vite 6 (#6498)
+
+[33mcommit 8b67958f49054f3e6c9b61d2e0b0a1e5323f30f4[m
+Author: Pavel <DvDty@users.noreply.github.com>
+Date:   Thu Nov 21 16:54:46 2024 +0200
+
+    Narrow down array types (#6497)
+
+[33mcommit 980ef58fdda4db1fca4b1c8f36cf404f69d8ab2f[m
+Author: taylorotwell <taylorotwell@users.noreply.github.com>
+Date:   Tue Nov 19 20:51:59 2024 +0000
+
+    Update CHANGELOG
+
+[33mcommit 2eacb3d0f08a401ff70107c7a617e27478fb576d[m[33m ([m[1;33mtag: v11.3.3[m[33m)[m
+Author: Taylor Otwell <taylor@laravel.com>
+Date:   Mon Nov 18 08:18:44 2024 -0600
+
+    wip
+
+[33mcommit 3b146114e2c5a494f1f0a74aaeedf97511ac1964[m
+Author: Andrew Brown <browner12@gmail.com>
+Date:   Mon Nov 18 08:18:13 2024 -0600
+
+    match `HidesAttributes` docblocks (#6495)
+    
+    the docblock in `HidesAttributes` was updated in #42512, so this child class should be using the same.
+    
+    otherwise PHPStan throws a "PHPDoc type array<int, string> of property App\Models\User::$hidden is not covariant with PHPDoc type list<string> of  property Illuminate\Database\Eloquent\Model::$hidden" error
+
+[33mcommit 3622d746fde67ebaff3dd3fdde3676599434692f[m
+Author: Perry van der Meer <11609290+PerryvanderMeer@users.noreply.github.com>
+Date:   Thu Nov 14 16:30:38 2024 +0100
+
+    Update composer.json (#6490)
+
+[33mcommit bc03c8d748da8a49e10d0ea405c438497fa8cfce[m
+Author: Emran Ramezan <Alch3m1st@duck.com>
+Date:   Thu Nov 7 21:55:36 2024 +0000
+
+    Update .gitignore (#6486)
+    
+    * Update .gitignore
+    
+    Added Panic's Nova Code Editor `dot` files
+    
+    * Update .gitignore
+    
+    ---------
+    
+    Co-authored-by: Taylor Otwell <taylor@laravel.com>
+
+[33mcommit 70f437b6fc7801ef11d6627d9ab48d698ffe5f26[m
+Author: Vaggelis Yfantis <me@octoper.me>
+Date:   Sun Nov 3 23:04:06 2024 +0200
+
+    Add $schema property to composer.json (#6484)
+
+[33mcommit 2e6ac2c9d2e29d1631ad0c44d25ef2b1b5663211[m
+Author: Amir Mohammad Babaei <amirbabaei.dev@gmail.com>
+Date:   Wed Oct 23 16:32:59 2024 +0330
+
+    Inconsistency in Github action names (#6478)
+    
+    * Update pull-requests.yml
+    
+    * Update issues.yml
+    
+    * Update update-changelog.yml
+
+[33mcommit 61fec7b8981c8d4dec3351574a902701f2489d3c[m
+Author: taylorotwell <taylorotwell@users.noreply.github.com>
+Date:   Tue Oct 22 14:23:02 2024 +0000
+
+    Update CHANGELOG
+
+[33mcommit 82a83a698134278da35d67b102f3e985b2d2502b[m[33m ([m[1;33mtag: v11.3.2[m[33m)[m
+Author: Nuno Maduro <enunomaduro@gmail.com>
+Date:   Mon Oct 21 14:59:43 2024 +0100
+
+    Fixes pail timing out after an hour (#6473)
+
+[33mcommit 1c880c36e2fbb697a6892a469aebbea37fe096dc[m
+Author: taylorotwell <taylorotwell@users.noreply.github.com>
+Date:   Tue Oct 15 20:04:27 2024 +0000
+
+    Update CHANGELOG
+
+[33mcommit f9f5e3c3ae0b9e536ddc690aae14032557956449[m[33m ([m[1;33mtag: v11.3.1[m[33m)[m
+Author: Taylor Otwell <taylor@laravel.com>
+Date:   Tue Oct 15 15:03:43 2024 -0500
+
+    wip
+
+[33mcommit ea60b55f9c157fc5717efedc8269868033d5bb8e[m
+Author: taylorotwell <taylorotwell@users.noreply.github.com>
+Date:   Tue Oct 15 14:29:07 2024 +0000
+
+    Update CHANGELOG
+
+[33mcommit 6c3d2fb4a0182355abc90972315a8caaab5aa435[m[33m ([m[1;33mtag: v11.3.0[m[33m)[m
+Author: Taylor Otwell <taylor@laravel.com>
+Date:   Mon Oct 14 09:25:43 2024 -0500
+
+    adjust colors
+
+[33mcommit 2f17c9764108cac1c1799c21ac7ecb3fa8a21c4e[m
+Author: Taylor Otwell <taylor@laravel.com>
+Date:   Mon Oct 14 09:22:52 2024 -0500
+
+    remove retries
+
+[33mcommit 0973f0a3365bb4a4611cbe1a14a0eaffc2a9dced[m
+Author: Taylor Otwell <taylor@laravel.com>
+Date:   Fri Oct 11 16:57:35 2024 -0500
+
+    add restart tries
+
+[33mcommit b378ce946a05b5ab80776c3b5e40fa84751084bd[m
+Author: Taylor Otwell <taylor@laravel.com>
+Date:   Thu Oct 10 14:21:56 2024 -0500
+
+    Add Tailwind, "composer run dev" (#6463)
+    
+    This PR does two things...
+    
+    First, it adds a basic Tailwind configuration out of the box. This lets you start using Tailwind immediately without installing any starter kit. Useful if you just want to mess around or build things from scratch.
+    
+    Second, it adds a composer run dev script, which starts php artisan serve, php artisan queue:listen --tries=1, php artisan pail (now a dev dependency by default), and npm run dev all in one command, with color coded output in the terminal using concurrently.
+
+[33mcommit a61a6361ed7028c21a4a6b2bf4ce41f5b08e4499[m
+Author: taylorotwell <taylorotwell@users.noreply.github.com>
+Date:   Tue Oct 8 16:08:41 2024 +0000
+
+    Update CHANGELOG
+
+[33mcommit 49bceac41ff34dd6df12760041ead73f8888dc6c[m[33m ([m[1;33mtag: v11.2.1[m[33m)[m
+Author: Dominik Koch <dominik@koch-bautechnik.de>
+Date:   Tue Oct 8 15:34:41 2024 +0200
+
+    Update welcome.blade.php to add missing alt tag (#6462)
+    
+    Every image should have an alt tag for accessibility reasons, but this one did not, so this commit aims to add the missing one.
+
+[33mcommit c9c8fb9ee73266b2bb4183603b553b2ee9030252[m
+Author: Punyapal Shah <53343069+MrPunyapal@users.noreply.github.com>
+Date:   Thu Sep 19 16:52:19 2024 +0530
+
+    Refactor User model to use HasFactory trait and add type hint for UserFactory (#6453)
+
+[33mcommit 6e71b994e7a249c5f932b342c2d69c4e3591696f[m
+Author: Amdadul Haq <amdadulhaq781@gmail.com>
+Date:   Wed Sep 18 22:21:54 2024 +0600
+
+    Update composer.json (#6454)
+
+[33mcommit e0421a4ec94be0044217e83b9c839676337139ae[m
+Author: taylorotwell <taylorotwell@users.noreply.github.com>
+Date:   Wed Sep 11 21:34:45 2024 +0000
+
+    Update CHANGELOG
+
+[33mcommit bab16982dd64e3f58bf2242d5ad0585f9a331e01[m[33m ([m[1;33mtag: v11.2.0[m[33m)[m
+Author: Taylor Otwell <taylor@laravel.com>
+Date:   Wed Sep 11 15:12:40 2024 -0500
+
+    private files (#6450)
+
+[33mcommit 168e685936c3a78cccddae45c14a5103b9876901[m
+Author: Fahad Khan <fahadkhan1740@outlook.com>
+Date:   Fri Sep 6 00:04:18 2024 +0400
+
+    Update .gitignore with Zed Editor (#6449)
+
+[33mcommit f0a12c6600d5c16a73e2bd5ce474ee1400af480b[m
+Author: driesvints <driesvints@users.noreply.github.com>
+Date:   Tue Sep 3 15:32:25 2024 +0000
+
+    Update CHANGELOG
+
+[33mcommit c12fd185e64b6fd652243e06f290f438164ddde5[m[33m ([m[1;33mtag: v11.1.5[m[33m)[m
+Author: laserhybiz <100562257+laserhybiz@users.noreply.github.com>
+Date:   Wed Aug 14 17:36:13 2024 +0300
+
+    Update package.json (#6440)
+
+[33mcommit 6ebd9fed8a1724464e9c1138d94c882d12dfd61b[m
+Author: taylorotwell <taylorotwell@users.noreply.github.com>
+Date:   Tue Jul 16 14:40:46 2024 +0

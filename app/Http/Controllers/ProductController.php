@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Phone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http; // Import Http facade
 use App\Http\Services\FonnteService;
@@ -20,8 +21,7 @@ class ProductController extends Controller
             'Authorization' => 'WLYy94BAnsLrgb15zLsx' // Token Fonnte Anda
         ])->post('https://api.fonnte.com/get-whatsapp-group');  // Ambil daftar grup
         
-        $groups = $response->json(); 
-        $groupList = isset($groups['data']) ? $groups['data'] : [];
+        $groups = Phone::all();
         
         // Ambil kata kunci pencarian dari request
         $search = $request->input('search');
@@ -32,7 +32,7 @@ class ProductController extends Controller
         })->get();
         
         // Tampilkan view dengan data grup dan produk
-        return view('products.index', compact('groupList', 'products', 'search'));
+        return view('products.index', compact('groups', 'products', 'search'));
     }
 
     public function create()
@@ -42,44 +42,37 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            // Validasi input
-            $request->validate([
-                'products' => 'required|array',
-                'products.*.name' => 'required|string|max:255',
-                'products.*.harga' => 'required|string',
-                'products.*.description' => 'required|string',
-                'products.*.image' => 'required|string', // Base64 string
-            ]);
+        $validatedData = $request->validate([
+            'products.*.name' => 'required|string|max:255',
+            'products.*.description' => 'required|string',
+            'products.*.image' => 'nullable|image',  // Pastikan image opsional
+        ]);
     
-            foreach ($request->products as $productData) {
-                $imagePath = null;
-if (!empty($productData['image'])) {
-    $imageData = explode(',', $productData['image'])[1]; // Ambil base64 string
-    $imageName = time() . '_' . uniqid() . '.png';
-
-    // Menyimpan gambar di storage/app/public/images
-    $path = Storage::disk('public')->put('images/' . $imageName, base64_decode($imageData));
-
-    // Menyimpan path relatif untuk gambar di database
-    $imagePath = 'images/' . $imageName;
-}
+        foreach ($request->products as $productData) {
+            $product = new Product();
+            $product->name = $productData['name'];
+            $product->description = $productData['description'];
     
-                Product::create([
-                    'name' => $productData['name'],
-                    'harga' => $productData['harga'],
-                    'description' => $productData['description'],
-                    'image' => $imagePath,
-                ]);
+            if (isset($productData['image'])) {
+                // Jika ada gambar, simpan gambar
+                $imagePath = $productData['image']; // Gambar dalam format base64
+                // Proses gambar untuk disimpan, misalnya dengan menyimpan path gambar
+                // Misalnya, kamu dapat menyimpannya di folder storage
+                $imageName = uniqid() . '.png'; // Ganti dengan ekstensi yang sesuai
+                $path = public_path('images/' . $imageName);
+                file_put_contents($path, base64_decode($imagePath));  // Menyimpan gambar
+    
+                $product->image = 'images/' . $imageName;  // Simpan path gambar
+            } else {
+                // Jika tidak ada gambar, beri nilai default (misalnya gambar default atau string kosong)
+                $product->image = '';  // Atau 'images/default.png'
             }
     
-            return response()->json(['success' => true], 201);
-        } catch (\Exception $e) {
-            \Log::error('Error saat menyimpan produk: ' . $e->getMessage());
-            return response()->json(['error' => 'Terjadi kesalahan saat menyimpan produk'], 500);
+            $product->save();
         }
-    }
     
+        return response()->json(['message' => 'Produk berhasil disimpan']);
+    }
     
     private function saveImage($imageBase64)
     {
@@ -102,7 +95,7 @@ public function edit(Product $product)
     {
         $request->validate([
             'name' => 'required',
-            'harga' => 'required',
+           
             'description' => 'required',
         ]);
 
@@ -113,7 +106,7 @@ public function edit(Product $product)
 
         $product->update([
             'name' => $request->name,
-            'harga' => $request->harga,
+           
             'description' => $request->description,
         ]);
 
@@ -171,133 +164,141 @@ public function edit(Product $product)
       return response()->json(['response' => $response], 200);
   }
   public function sendToWhatsApp(Request $request)
-  {
-      $request->validate([
-          'selected_products' => 'required|array',
-          'selected_products.*' => 'exists:products,id',
-          'group_id' => 'required|array',
-          'group_id.*' => 'string',
-          'schedule' => 'nullable|date',
-      ]);
-  
-      // Ambil produk yang dipilih
-      $products = Product::whereIn('id', $request->selected_products)->get();
-      // Ambil ID grup yang dipilih
-      $groupIds = $request->input('group_id');
-      // Ambil jadwal (jika ada)
-      $schedule = $request->input('schedule');
-      // Konversi jadwal awal ke timestamp jika ada
-      $scheduleTimestamp = $schedule ? strtotime($schedule . "+0700") : null;
-  
-      // Jika ada jadwal
-      if ($scheduleTimestamp) {
-          // Iterasi untuk pengiriman pesan (hari ini, besok, 2 hari setelahnya)
-          for ($i = 0; $i < 2; $i++) {
-              // Tentukan timestamp untuk pengiriman pertama (hari ini) atau kedua (2 hari setelahnya)
-              $currentScheduleTimestamp = $scheduleTimestamp + (172800 * $i); // Tambah 2 hari untuk iterasi kedua
-  
-              // Kirim produk yang dipilih untuk setiap grup
-              foreach ($products as $product) {
-                  foreach ($groupIds as $groupId) {
-                      $randomDelay = rand(60, 240); // Delay acak antara 60 hingga 240 detik
-  
-                      // Path absolut file
-                      $filePath = storage_path('app/public/' . $product->image);
-  
-                      // Periksa apakah file ada
-                      if (!file_exists($filePath)) {
-                          return response()->json(['error' => 'File tidak ditemukan: ' . $filePath], 400);
-                      }
-  
-                      // Data pesan
-                      $data = [
-                          'target' => $groupId,
-                          'message' => $product->description,
-                          'file' => new \CURLFile($filePath),
-                          'schedule' => $currentScheduleTimestamp ?? now()->timestamp, // Pengiriman berdasarkan jadwal
-                          'delay' => (string)$randomDelay,
-                      ];
-  
-                      // Kirim data ke API menggunakan cURL
-                      $curl = curl_init();
-                      curl_setopt_array($curl, [
-                          CURLOPT_URL => 'https://api.fonnte.com/send',
-                          CURLOPT_RETURNTRANSFER => true,
-                          CURLOPT_POST => true,
-                          CURLOPT_POSTFIELDS => $data, // Kirim data satu per satu
-                          CURLOPT_HTTPHEADER => [
-                              'Authorization: WLYy94BAnsLrgb15zLsx', // Token API
-                              'Content-Type: multipart/form-data',
-                          ],
-                      ]);
-  
-                      $response = curl_exec($curl);
-  
-                      // Cek apakah ada kesalahan pada cURL
-                      if (curl_errno($curl)) {
-                          $error_msg = curl_error($curl);
-                          curl_close($curl);
-                          return response()->json(['error' => $error_msg], 500);
-                      }
-  
-                      curl_close($curl);
-                  }
-              }
-          }
-      } else {
-          // Jika tidak ada jadwal, kirim langsung
-          foreach ($products as $product) {
-              foreach ($groupIds as $groupId) {
-                  $randomDelay = rand(60, 240); // Delay acak antara 60 hingga 240 detik
-  
-                  // Path absolut file
-                  $filePath = storage_path('app/public/' . $product->image);
-  
-                  // Periksa apakah file ada
-                  if (!file_exists($filePath)) {
-                      return response()->json(['error' => 'File tidak ditemukan: ' . $filePath], 400);
-                  }
-  
-                  // Data pesan
-                  $data = [
-                      'target' => $groupId,
-                      'message' => $product->description,
-                      'file' => new \CURLFile($filePath),
-                      'schedule' => now()->timestamp, // Kirim langsung
-                      'delay' => (string)$randomDelay,
-                  ];
-  
-                  // Kirim data ke API menggunakan cURL
-                  $curl = curl_init();
-                  curl_setopt_array($curl, [
-                      CURLOPT_URL => 'https://api.fonnte.com/send',
-                      CURLOPT_RETURNTRANSFER => true,
-                      CURLOPT_POST => true,
-                      CURLOPT_POSTFIELDS => $data, // Kirim data satu per satu
-                      CURLOPT_HTTPHEADER => [
-                          'Authorization: WLYy94BAnsLrgb15zLsx', // Token API
-                          'Content-Type: multipart/form-data',
-                      ],
-                  ]);
-  
-                  $response = curl_exec($curl);
-  
-                  // Cek apakah ada kesalahan pada cURL
-                  if (curl_errno($curl)) {
-                      $error_msg = curl_error($curl);
-                      curl_close($curl);
-                      return response()->json(['error' => $error_msg], 500);
-                  }
-  
-                  curl_close($curl);
-              }
-          }
-      }
-  
-      return redirect()->route('products.index')->with('success', 'Pesan berhasil dijadwalkan ke WhatsApp.');
-  }
-  
-  
+{
+    $request->validate([
+        'selected_products' => 'required|array',
+        'selected_products.*' => 'exists:products,id', // Pastikan produk ada di tabel products
+        'number' => 'required|array|min:1', // Harus berupa array, minimal pilih satu
+        'number.*' => 'string|regex:/^\d{10,15}$/', // Validasi nomor telepon (10-15 digit angka)
+        'schedule' => 'nullable|date', // Format tanggal opsional
+    ]);
+
+    // Ambil produk yang dipilih
+    $products = Product::whereIn('id', $request->selected_products)->get();
+
+    // Ambil nomor telepon yang dipilih
+    $phoneNumbers = $request->input('number');
+
+    // Ambil jadwal (jika ada)
+    $schedule = $request->input('schedule');
+
+    // Konversi jadwal ke timestamp (dengan zona waktu +0700 untuk Waktu Indonesia Barat)
+    $scheduleTimestamp = $schedule ? strtotime($schedule . " +0700") : null;
+
+    // Jika ada jadwal
+    if ($scheduleTimestamp) {
+        // Iterasi untuk pengiriman pesan (hari ini, besok, 2 hari setelahnya)
+        for ($i = 0; $i < 2; $i++) {
+            // Tentukan timestamp untuk pengiriman pertama (hari ini) atau kedua (2 hari setelahnya)
+            $currentScheduleTimestamp = $scheduleTimestamp + (172800 * $i); // Tambah 2 hari untuk iterasi kedua
+
+            // Kirim produk yang dipilih untuk setiap grup
+            foreach ($products as $product) {
+                foreach ($phoneNumbers as $phoneNumber) {
+                    $randomDelay = rand(60, 240); // Delay acak antara 60 hingga 240 detik
+
+                    // Data pesan
+                    $data = [
+                        'target' => $phoneNumber,
+                        'message' => $product->description,
+                        'schedule' => $currentScheduleTimestamp ?? now()->timestamp, // Pengiriman berdasarkan jadwal
+                        'delay' => (string)$randomDelay,
+                    ];
+
+                    // Jika produk memiliki gambar, tambahkan gambar dalam request
+                    if ($product->image) {
+                        $filePath = storage_path('app/public/' . $product->image);
+
+                        // Periksa apakah file ada
+                        if (file_exists($filePath)) {
+                            $data['file'] = new \CURLFile($filePath); // Menambahkan gambar jika ada
+                        } else {
+                            return response()->json(['error' => 'File gambar tidak ditemukan: ' . $filePath], 400);
+                        }
+                    }
+
+                    // Kirim data ke API menggunakan cURL
+                    $curl = curl_init();
+                    curl_setopt_array($curl, [
+                        CURLOPT_URL => 'https://api.fonnte.com/send',
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_POST => true,
+                        CURLOPT_POSTFIELDS => $data, // Kirim data satu per satu
+                        CURLOPT_HTTPHEADER => [
+                            'Authorization: WLYy94BAnsLrgb15zLsx', // Token API
+                            'Content-Type: multipart/form-data',
+                        ],
+                    ]);
+
+                    $response = curl_exec($curl);
+
+                    // Cek apakah ada kesalahan pada cURL
+                    if (curl_errno($curl)) {
+                        $error_msg = curl_error($curl);
+                        curl_close($curl);
+                        return response()->json(['error' => $error_msg], 500);
+                    }
+
+                    curl_close($curl);
+                }
+            }
+        }
+    } else {
+        // Jika tidak ada jadwal, kirim langsung
+        foreach ($products as $product) {
+            foreach ($phoneNumbers as $phoneNumber) {
+                $randomDelay = rand(60, 240); // Delay acak antara 60 hingga 240 detik
+
+                // Data pesan
+                $data = [
+                    'target' => $phoneNumber,
+                    'message' => $product->description,
+                    'schedule' => now()->timestamp, // Kirim langsung
+                    'delay' => (string)$randomDelay,
+                ];
+
+                // Jika produk memiliki gambar, tambahkan gambar dalam request
+                if ($product->image) {
+                    $filePath = storage_path('app/public/' . $product->image);
+
+                    // Periksa apakah file ada
+                    if (file_exists($filePath)) {
+                        $data['file'] = new \CURLFile($filePath); // Menambahkan gambar jika ada
+                    } else {
+                        return response()->json(['error' => 'File gambar tidak ditemukan: ' . $filePath], 400);
+                    }
+                }
+
+                // Kirim data ke API menggunakan cURL
+                $curl = curl_init();
+                curl_setopt_array($curl, [
+                    CURLOPT_URL => 'https://api.fonnte.com/send',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => $data, // Kirim data satu per satu
+                    CURLOPT_HTTPHEADER => [
+                        'Authorization: WLYy94BAnsLrgb15zLsx', // Token API
+                        'Content-Type: multipart/form-data',
+                    ],
+                ]);
+
+                $response = curl_exec($curl);
+
+                // Cek apakah ada kesalahan pada cURL
+                if (curl_errno($curl)) {
+                    $error_msg = curl_error($curl);
+                    curl_close($curl);
+                    return response()->json(['error' => $error_msg], 500);
+                }
+
+                curl_close($curl);
+            }
+        }
+    }
+
+    return redirect()->route('products.index')->with('success', 'Pesan berhasil dijadwalkan ke WhatsApp.');
+}
+
 
 // Metode untuk mengirim pesan ke WhatsApp dengan penjadwalan
 public function sendMessageToWhatsAppWithSchedule($target, $message, $scheduleTimestamp, $countryCode = '62', $delay = null)
